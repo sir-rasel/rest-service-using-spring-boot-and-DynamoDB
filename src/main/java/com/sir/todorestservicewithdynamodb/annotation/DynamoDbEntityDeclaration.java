@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface DynamoDbEntityDeclaration {
     String tableName();
-    String GSI_1() default "";
+    String gsi() default "";
 }

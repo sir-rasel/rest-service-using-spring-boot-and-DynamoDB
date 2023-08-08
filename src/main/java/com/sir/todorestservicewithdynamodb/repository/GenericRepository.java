@@ -20,8 +20,8 @@ public interface GenericRepository<T> {
 
     Mono<T> deleteById(final String primaryKey);
 
-    Mono<T> findByIdFromGSI_1(final String primaryKey);
+    Mono<T> findByIdFromGSI(final String primaryKey);
 
-    Mono<Page<T>> findAllFromGSI_1(final String primaryKey, @Nullable final Map<String, AttributeValue> keys,
-                                   final Integer pageSize);
+    Mono<Page<T>> findAllFromGSI(final String primaryKey, @Nullable final Map<String, AttributeValue> keys,
+                                 final Integer pageSize);
 }
