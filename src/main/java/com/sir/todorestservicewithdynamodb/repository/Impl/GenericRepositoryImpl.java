@@ -22,9 +22,8 @@ public class GenericRepositoryImpl<T> implements GenericRepository<T> {
     protected final DynamoDbAsyncTable<T> dynamoDbEnhancedAsyncTable;
     protected final DynamoDbAsyncIndex<T> dynamoDbAsyncIndex;
     protected final Class<T> entityType;
-
     protected final String tableName;
-    protected final String gsiTableName;
+    protected final String gsiIndexName;
 
     public GenericRepositoryImpl(DynamoDbEnhancedAsyncClient dynamoDbEnhancedAsyncClient, Class<T> entityType) {
         this.dynamoDbEnhancedAsyncClient = dynamoDbEnhancedAsyncClient;
@@ -32,7 +31,7 @@ public class GenericRepositoryImpl<T> implements GenericRepository<T> {
         this.dynamoDbEnhancedAsyncTable = createAsyncTable();
         this.dynamoDbAsyncIndex = createGsi1AsyncIndex();
         this.tableName = getTableName();
-        this.gsiTableName = getGsiTableName();
+        this.gsiIndexName = getGsiIndexName();
     }
 
     private DynamoDbAsyncTable<T> createAsyncTable() {
@@ -40,23 +39,25 @@ public class GenericRepositoryImpl<T> implements GenericRepository<T> {
     }
 
     private DynamoDbAsyncIndex<T> createGsi1AsyncIndex() {
-        if (StringUtils.isBlank(this.gsiTableName)) {
+        if (StringUtils.isBlank(this.gsiIndexName)) {
             return null;
         }
-        return this.dynamoDbEnhancedAsyncTable.index(this.gsiTableName);
+        return this.dynamoDbEnhancedAsyncTable.index(this.gsiIndexName);
     }
 
     private String getTableName() {
-        DynamoDbEntityDeclaration dynamoDbEntityDeclaration = entityType.getAnnotation(DynamoDbEntityDeclaration.class);
-        if(dynamoDbEntityDeclaration.tableName() == null){
+        DynamoDbEntityDeclaration dynamoDbEntityDeclaration =
+                entityType.getAnnotation(DynamoDbEntityDeclaration.class);
+        if (dynamoDbEntityDeclaration.tableName() == null) {
             throw new ApplicationException("Table Name not found");
         }
 
         return dynamoDbEntityDeclaration.tableName();
     }
 
-    private String getGsiTableName() {
-        DynamoDbEntityDeclaration dynamoDbEntityDeclaration = entityType.getAnnotation(DynamoDbEntityDeclaration.class);
+    private String getGsiIndexName() {
+        DynamoDbEntityDeclaration dynamoDbEntityDeclaration =
+                entityType.getAnnotation(DynamoDbEntityDeclaration.class);
         return dynamoDbEntityDeclaration.gsi();
     }
 
@@ -110,15 +111,15 @@ public class GenericRepositoryImpl<T> implements GenericRepository<T> {
     public Mono<T> findByIdFromGSI(String primaryKey) {
         return Mono.fromSupplier(() -> this.dynamoDbAsyncIndex)
                 .switchIfEmpty(Mono.error(() -> new ApplicationException("No GSI found")))
-                .flatMap(index -> getItemFromGsi1ByPk(primaryKey));
+                .flatMap(index -> getItemFromGsiByPk(primaryKey));
     }
 
-    private Mono<T> getItemFromGsi1ByPk(String partitionKey) {
-        return getItemListFromGsi1ByPk(partitionKey)
+    private Mono<T> getItemFromGsiByPk(String partitionKey) {
+        return getItemListFromGsiByPk(partitionKey)
                 .mapNotNull(tPage -> tPage.items().stream().findFirst().orElse(null));
     }
 
-    private Mono<Page<T>> getItemListFromGsi1ByPk(String partitionKey) {
+    private Mono<Page<T>> getItemListFromGsiByPk(String partitionKey) {
         Key searchKey = Key.builder().partitionValue(partitionKey).build();
         QueryConditional queryConditional = QueryConditional.keyEqualTo(searchKey);
         QueryEnhancedRequest queryEnhancedRequest = QueryEnhancedRequest.builder()
@@ -132,6 +133,6 @@ public class GenericRepositoryImpl<T> implements GenericRepository<T> {
     public Mono<Page<T>> findAllFromGSI(String primaryKey, @Nullable Map<String, AttributeValue> keys, Integer pageSize) {
         return Mono.fromSupplier(() -> this.dynamoDbAsyncIndex)
                 .switchIfEmpty(Mono.error(() -> new ApplicationException("No GSI found")))
-                .flatMap(unusedDynamoDbAsyncIndex -> getItemListFromGsi1ByPk(primaryKey));
+                .flatMap(unusedDynamoDbAsyncIndex -> getItemListFromGsiByPk(primaryKey));
     }
 }

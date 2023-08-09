@@ -2,10 +2,7 @@ package com.sir.todorestservicewithdynamodb.model;
 
 import com.sir.todorestservicewithdynamodb.annotation.DynamoDbEntityDeclaration;
 import lombok.*;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*;
 
 @Data
 @Builder
@@ -14,7 +11,10 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecon
 @DynamoDbBean
 @DynamoDbEntityDeclaration(tableName = "todo_entity")
 public class ToDoEntity {
-    @Getter(onMethod_ = {@DynamoDbPartitionKey, @DynamoDbAttribute("todo_id")})
+    @Getter(onMethod_ = {@DynamoDbPartitionKey, @DynamoDbAttribute("user_email")})
+    private String userEmail;
+
+    @Getter(onMethod_ = {@DynamoDbSortKey, @DynamoDbAttribute("todo_id")})
     private String id;
 
     @Getter(onMethod_ = {@DynamoDbAttribute("created_at"),
@@ -22,9 +22,20 @@ public class ToDoEntity {
     })
     private String createdAt;
 
-    @Getter(onMethod_ = {@DynamoDbAttribute("description")})
-    private String description;
+    @Getter(onMethod_ = {@DynamoDbAttribute("finished_before"),
+            @DynamoDbSecondaryPartitionKey(indexNames = "todo_finished_before_index")
+    })
+    private String finishedBefore;
+
+    @Getter(onMethod_ = {@DynamoDbAttribute("task_description")})
+    private String taskDescription;
 
     @Getter(onMethod_ = {@DynamoDbAttribute("status")})
     private String status;
+
+    @Getter(onMethod_ = {@DynamoDbAttribute("started_at")})
+    private String startedAt;
+
+    @Getter(onMethod_ = {@DynamoDbAttribute("completed_at")})
+    private String completedAt;
 }

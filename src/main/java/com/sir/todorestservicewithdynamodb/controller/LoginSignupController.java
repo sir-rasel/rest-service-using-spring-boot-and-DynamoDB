@@ -5,7 +5,7 @@ import com.sir.todorestservicewithdynamodb.dtos.loginSignup.request.RefreshToken
 import com.sir.todorestservicewithdynamodb.dtos.loginSignup.request.SignupRequestDto;
 import com.sir.todorestservicewithdynamodb.service.UserService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @Validated
 @RequestMapping("/api")
 public class LoginSignupController {
-    private UserService userService;
+    private final UserService userService;
 
     @PostMapping("/login")
     public Mono<ResponseEntity<?>> login(@RequestBody @Valid LoginRequestDto request) {
