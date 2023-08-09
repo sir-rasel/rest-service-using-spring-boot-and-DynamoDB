@@ -1,6 +1,7 @@
 package com.sir.todorestservicewithdynamodb.model;
 
 import com.sir.todorestservicewithdynamodb.annotation.DynamoDbEntityDeclaration;
+import com.sir.todorestservicewithdynamodb.constant.TodoTableIndexNames;
 import lombok.*;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*;
 
@@ -14,23 +15,23 @@ public class ToDoEntity {
     @Getter(onMethod_ = {@DynamoDbPartitionKey, @DynamoDbAttribute("user_email")})
     private String userEmail;
 
-    @Getter(onMethod_ = {@DynamoDbSortKey, @DynamoDbAttribute("todo_id")})
+    @Getter(onMethod_ = {@DynamoDbAttribute("todo_id"),
+            @DynamoDbSecondaryPartitionKey(indexNames = TodoTableIndexNames.ID_INDEX)
+    })
     private String id;
 
-    @Getter(onMethod_ = {@DynamoDbAttribute("created_at"),
-            @DynamoDbSecondaryPartitionKey(indexNames = "todo_created_at_index")
-    })
+    @Getter(onMethod_ = {@DynamoDbSortKey, @DynamoDbAttribute("created_at")})
     private String createdAt;
 
-    @Getter(onMethod_ = {@DynamoDbAttribute("finished_before"),
-            @DynamoDbSecondaryPartitionKey(indexNames = "todo_finished_before_index")
-    })
+    @Getter(onMethod_ = {@DynamoDbAttribute("finished_before")})
     private String finishedBefore;
 
     @Getter(onMethod_ = {@DynamoDbAttribute("task_description")})
     private String taskDescription;
 
-    @Getter(onMethod_ = {@DynamoDbAttribute("status")})
+    @Getter(onMethod_ = {@DynamoDbAttribute("status"),
+            @DynamoDbSecondaryPartitionKey(indexNames = TodoTableIndexNames.TODO_STATUS_INDEX)
+    })
     private String status;
 
     @Getter(onMethod_ = {@DynamoDbAttribute("started_at")})

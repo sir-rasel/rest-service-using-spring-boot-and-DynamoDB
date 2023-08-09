@@ -6,6 +6,7 @@ import com.sir.todorestservicewithdynamodb.dtos.loginSignup.request.SignupReques
 import com.sir.todorestservicewithdynamodb.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,9 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @RestController
 @Validated
-@RequestMapping("/api")
+@RequestMapping(value = "/api",
+        produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
 public class LoginSignupController {
     private final UserService userService;
 
