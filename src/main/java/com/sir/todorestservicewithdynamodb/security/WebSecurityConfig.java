@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono;
 @EnableReactiveMethodSecurity
 @AllArgsConstructor
 @Configuration
-@ConditionalOnProperty(name="ssecurity.enabled")
+@ConditionalOnProperty(name = "s.security.enabled")
 public class WebSecurityConfig {
     private AuthenticationManager authenticationManager;
     private SecurityContextRepository securityContextRepository;

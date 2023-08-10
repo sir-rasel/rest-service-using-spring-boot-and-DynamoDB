@@ -14,13 +14,13 @@ import java.util.Base64;
 @Component
 public class CustomEncoder implements PasswordEncoder {
 
-    @Value("${ssecurity.jjwt.password.encoder.secret}")
+    @Value("${s.security.jjwt.password.encoder.secret}")
     private String secret;
 
-    @Value("${ssecurity.jjwt.password.encoder.iteration}")
+    @Value("${s.security.jjwt.password.encoder.iteration}")
     private Integer iteration;
 
-    @Value("${ssecurity.jjwt.password.encoder.keylength}")
+    @Value("${s.security.jjwt.password.encoder.keylength}")
     private Integer keylength;
 
     @Override

@@ -5,6 +5,7 @@ import com.sir.todorestservicewithdynamodb.exception.ApplicationException;
 import com.sir.todorestservicewithdynamodb.repository.GenericRepository;
 import jakarta.annotation.Nullable;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import software.amazon.awssdk.enhanced.dynamodb.*;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
@@ -17,7 +18,7 @@ import software.amazon.awssdk.utils.StringUtils;
 import java.util.Map;
 
 @Repository
-public class GenericRepositoryImpl<T> implements GenericRepository<T> {
+public abstract class GenericRepositoryImpl<T> implements GenericRepository<T> {
     private final DynamoDbEnhancedAsyncClient dynamoDbEnhancedAsyncClient;
     protected final DynamoDbAsyncTable<T> dynamoDbEnhancedAsyncTable;
     protected final DynamoDbAsyncIndex<T> dynamoDbAsyncIndex;
@@ -70,6 +71,22 @@ public class GenericRepositoryImpl<T> implements GenericRepository<T> {
     }
 
     @Override
+    public Flux<T> findAllById(String primaryKey) {
+        Key key = Key.builder()
+                .partitionValue(primaryKey)
+                .build();
+
+        QueryConditional queryConditional = QueryConditional.keyEqualTo(key);
+        QueryEnhancedRequest queryEnhancedRequest = QueryEnhancedRequest.builder()
+                .queryConditional(queryConditional)
+                .build();
+
+        return Mono.from(dynamoDbEnhancedAsyncTable.query(queryEnhancedRequest))
+                .mapNotNull(Page::items)
+                .flatMapMany(Flux::fromIterable);
+    }
+
+    @Override
     public Mono<T> findByIdAndSk(String primaryKey, String secondaryKey) {
         Key key = Key.builder()
                 .partitionValue(primaryKey)
@@ -103,6 +120,15 @@ public class GenericRepositoryImpl<T> implements GenericRepository<T> {
     public Mono<T> deleteById(String primaryKey) {
         Key key = Key.builder()
                 .partitionValue(primaryKey)
+                .build();
+        return Mono.fromFuture(() -> this.dynamoDbEnhancedAsyncTable.deleteItem(key));
+    }
+
+    @Override
+    public Mono<T> deleteByIdAndSortKey(String primaryKey, String secondaryKey) {
+        Key key = Key.builder()
+                .partitionValue(primaryKey)
+                .sortValue(secondaryKey)
                 .build();
         return Mono.fromFuture(() -> this.dynamoDbEnhancedAsyncTable.deleteItem(key));
     }

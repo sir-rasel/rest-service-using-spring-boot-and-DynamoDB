@@ -18,13 +18,13 @@ import java.util.Map;
 public class JWTUtil implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Value("${ssecurity.jjwt.secret}")
+    @Value("${s.security.jjwt.secret}")
     private String secret;
 
-    @Value("${ssecurity.jjwt.tokenexpiration}")
+    @Value("${s.security.jjwt.tokenexpiration}")
     private String tokenExpirationTime;
 
-    @Value("${ssecurity.jjwt.refreshtokenexpiration}")
+    @Value("${s.security.jjwt.refreshtokenexpiration}")
     private String refreshTokenExpirationTime;
 
     public Claims getAllClaimsFromToken(String token) {

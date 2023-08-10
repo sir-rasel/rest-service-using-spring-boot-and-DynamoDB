@@ -40,14 +40,10 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
                 for (String rolemap : rolesMap) {
                     roles.add(Roles.valueOf(rolemap));
                 }
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                        userEmail,
-                        authToken,
+                return new UsernamePasswordAuthenticationToken(userEmail, authToken,
                         roles.stream().map(authority ->
                                 new SimpleGrantedAuthority(authority.name())).collect(Collectors.toList())
                 );
-
-                return auth;
             }
 
             return null;

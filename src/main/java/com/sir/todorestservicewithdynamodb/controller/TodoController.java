@@ -28,7 +28,7 @@ public class TodoController {
         return todoService.getAllTodos(email);
     }
 
-    @GetMapping("/{email}")
+    @GetMapping("/{email}/by-status")
     public Flux<TodoDto> getAllTodosByStatus(@PathVariable final String email,
                                              @RequestParam @NotEmpty TodoStatus status) {
         return todoService.getAllTodosByStatus(email, status);
@@ -39,14 +39,14 @@ public class TodoController {
         return todoService.getTodo(id);
     }
 
-    @PostMapping
-    public Mono<TodoDto> createTodo(@RequestBody @Valid final TodoCreateRequest todoCreateRequest) {
+    @PostMapping("/add")
+    public Mono<TodoDto> createTodo(@RequestBody @Valid TodoCreateRequest todoCreateRequest) {
         return todoService.createTodo(todoCreateRequest);
     }
 
     @PutMapping("/{id}")
     public Mono<TodoDto> updateTodo(@PathVariable final String id,
-                                    @RequestBody @Valid final TodoUpdateRequest todoUpdateRequest) {
+                                    @RequestBody @Valid TodoUpdateRequest todoUpdateRequest) {
         return todoService.updateTodo(id, todoUpdateRequest);
     }
 

@@ -10,11 +10,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class TodoDto {
-    public String id;
-    public String userEmail;
-    public String createdAt;
-    public String taskDescription;
-    public String status;
-    public String startedAt;
-    public String completedAt;
+    private String id;
+    private String userEmail;
+    private String createdAt;
+    private String taskDescription;
+    private String status;
+    private String startedAt;
+    private String completedAt;
+    public String finishedBefore;
 }

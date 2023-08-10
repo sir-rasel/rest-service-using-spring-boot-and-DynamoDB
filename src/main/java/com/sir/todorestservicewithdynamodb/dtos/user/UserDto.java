@@ -13,8 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class UserDto {
-    public String name;
-    public String firstName;
-    public String email;
-    public List<@NotBlank(message = "Role should not be empty") String> roles;
+    private String name;
+    private String firstName;
+    private String email;
+    private List<@NotBlank(message = "Role should not be empty") String> roles;
 }

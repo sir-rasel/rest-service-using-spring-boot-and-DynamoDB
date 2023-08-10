@@ -12,7 +12,7 @@ import com.sir.todorestservicewithdynamodb.security.CustomEncoder;
 import com.sir.todorestservicewithdynamodb.service.UserService;
 import com.sir.todorestservicewithdynamodb.utility.JWTUtil;
 import com.sir.todorestservicewithdynamodb.utility.UtilService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ import reactor.core.publisher.Mono;
 import java.util.Date;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
