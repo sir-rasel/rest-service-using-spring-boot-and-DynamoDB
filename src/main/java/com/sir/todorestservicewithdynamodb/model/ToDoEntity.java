@@ -13,7 +13,8 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*;
 @DynamoDbEntityDeclaration(tableName = "todo_entity")
 public class ToDoEntity {
     @Getter(onMethod_ = {@DynamoDbPartitionKey, @DynamoDbAttribute("user_email"),
-            @DynamoDbSecondarySortKey(indexNames = TodoTableIndexNames.TODO_STATUS_INDEX)})
+            @DynamoDbSecondarySortKey(indexNames = {TodoTableIndexNames.ID_INDEX,
+                    TodoTableIndexNames.TODO_STATUS_INDEX})})
     private String userEmail;
 
     @Getter(onMethod_ = {@DynamoDbAttribute("todo_id"),
