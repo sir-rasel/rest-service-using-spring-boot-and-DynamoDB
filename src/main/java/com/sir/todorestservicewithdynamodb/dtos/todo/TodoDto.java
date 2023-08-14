@@ -17,5 +17,5 @@ public class TodoDto {
     private String status;
     private String startedAt;
     private String completedAt;
-    public String finishedBefore;
+    private String finishedBefore;
 }

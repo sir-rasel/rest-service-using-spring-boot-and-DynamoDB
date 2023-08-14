@@ -3,6 +3,7 @@ package com.sir.todorestservicewithdynamodb.exception.handler;
 import com.sir.todorestservicewithdynamodb.dtos.ErrorResponse;
 import com.sir.todorestservicewithdynamodb.dtos.FieldError;
 import com.sir.todorestservicewithdynamodb.exception.ApplicationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -14,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+@Slf4j
 @RestControllerAdvice(annotations = RestController.class)
 public class RestExceptionHandler {
     @ExceptionHandler(ApplicationException.class)
