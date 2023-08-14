@@ -29,10 +29,10 @@ public abstract class GenericRepositoryImpl<T> implements GenericRepository<T> {
     public GenericRepositoryImpl(DynamoDbEnhancedAsyncClient dynamoDbEnhancedAsyncClient, Class<T> entityType) {
         this.dynamoDbEnhancedAsyncClient = dynamoDbEnhancedAsyncClient;
         this.entityType = entityType;
-        this.dynamoDbEnhancedAsyncTable = createAsyncTable();
-        this.dynamoDbAsyncIndex = createGsi1AsyncIndex();
         this.tableName = getTableName();
         this.gsiIndexName = getGsiIndexName();
+        this.dynamoDbEnhancedAsyncTable = createAsyncTable();
+        this.dynamoDbAsyncIndex = createGsi1AsyncIndex();
     }
 
     private DynamoDbAsyncTable<T> createAsyncTable() {
@@ -47,19 +47,27 @@ public abstract class GenericRepositoryImpl<T> implements GenericRepository<T> {
     }
 
     private String getTableName() {
-        DynamoDbEntityDeclaration dynamoDbEntityDeclaration =
-                entityType.getAnnotation(DynamoDbEntityDeclaration.class);
-        if (dynamoDbEntityDeclaration.tableName() == null) {
-            throw new ApplicationException("Table Name not found");
+        if (this.entityType.isAnnotationPresent(DynamoDbEntityDeclaration.class)) {
+            DynamoDbEntityDeclaration dynamoDbEntityDeclaration =
+                    entityType.getAnnotation(DynamoDbEntityDeclaration.class);
+            if (dynamoDbEntityDeclaration.tableName() == null) {
+                throw new ApplicationException("Table Name not found");
+            }
+
+            return dynamoDbEntityDeclaration.tableName();
         }
 
-        return dynamoDbEntityDeclaration.tableName();
+        throw new ApplicationException("Table Name not found");
     }
 
     private String getGsiIndexName() {
-        DynamoDbEntityDeclaration dynamoDbEntityDeclaration =
-                entityType.getAnnotation(DynamoDbEntityDeclaration.class);
-        return dynamoDbEntityDeclaration.gsi();
+        if (this.entityType.isAnnotationPresent(DynamoDbEntityDeclaration.class)) {
+            DynamoDbEntityDeclaration dynamoDbEntityDeclaration =
+                    entityType.getAnnotation(DynamoDbEntityDeclaration.class);
+            return dynamoDbEntityDeclaration.gsi();
+        }
+
+        return null;
     }
 
     @Override
