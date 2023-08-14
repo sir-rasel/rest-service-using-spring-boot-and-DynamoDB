@@ -11,12 +11,9 @@ import com.sir.todorestservicewithdynamodb.repository.UserRepository;
 import com.sir.todorestservicewithdynamodb.security.CustomEncoder;
 import com.sir.todorestservicewithdynamodb.service.UserService;
 import com.sir.todorestservicewithdynamodb.utility.JWTUtil;
-import com.sir.todorestservicewithdynamodb.utility.UtilService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,13 +25,11 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
-    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
     private final ModelMapper mapper = new ModelMapper();
 
-    private JWTUtil jwtUtil;
-    private UtilService utilService;
-    private CustomEncoder passwordEncoder;
+    private final JWTUtil jwtUtil;
+    private final CustomEncoder passwordEncoder;
 
     @Override
     public Mono<ResponseEntity<?>> validateLoginRequestAndGetTokenResponse(LoginRequestDto request) {
@@ -43,7 +38,7 @@ public class UserServiceImpl implements UserService {
                     if (passwordEncoder.encode(request.getPassword()).equals(userDetails.getPassword())) {
                         return ResponseEntity.ok(generateTokenResponseOnLogin(userDetails));
                     } else {
-                        logger.info("Password not matched");
+                        log.info("Password not matched");
                         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
                     }
                 })
@@ -75,13 +70,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<ResponseEntity<?>> createUserOnSignup(SignupRequestDto userdata) {
-        String message = utilService.validation(userdata);
-        if (message.isEmpty()) {
-            userdata.setPassword(passwordEncoder.encode(userdata.getPassword()));
-            return Mono.just(ResponseEntity.ok(createUser(userdata)));
-        } else {
-            return Mono.just(ResponseEntity.badRequest().body(message));
-        }
+        userdata.setPassword(passwordEncoder.encode(userdata.getPassword()));
+        return Mono.just(ResponseEntity.ok(createUser(userdata)));
     }
 
     @Override
@@ -93,20 +83,23 @@ public class UserServiceImpl implements UserService {
                     .switchIfEmpty(Mono.error(new ApplicationException("Invalid refresh token")))
                     .map(userDetails -> ResponseEntity.ok(generateTokenResponseOnLogin(userDetails)));
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
             return Mono.error(new ApplicationException("Invalid refresh token"));
         }
     }
 
     private Mono<UserDto> createUser(SignupRequestDto userData) {
         UserEntity user = UserEntity.builder()
-                .name(userData.getPassword())
+                .name(userData.getName())
+                .password(userData.getPassword())
                 .email(userData.getEmail())
                 .roles(userData.getRoles())
+                .refreshToken(null)
                 .build();
 
         return userRepository.save(user)
-                .map(userEntity -> mapper.map(userEntity, UserDto.class));
+                .map(userEntity -> mapper.map(userEntity, UserDto.class))
+                .doOnError(throwable -> log.error("Error db: ", throwable));
     }
 
     private Mono<UserEntity> updateUserRefreshToken(UserEntity user, String refreshToken) {

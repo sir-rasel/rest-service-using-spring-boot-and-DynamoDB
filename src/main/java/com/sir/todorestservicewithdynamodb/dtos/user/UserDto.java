@@ -14,7 +14,6 @@ import java.util.List;
 @Builder
 public class UserDto {
     private String name;
-    private String firstName;
     private String email;
     private List<@NotBlank(message = "Role should not be empty") String> roles;
 }
