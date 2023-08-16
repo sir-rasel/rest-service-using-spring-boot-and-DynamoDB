@@ -48,13 +48,13 @@ public class JWTUtil implements Serializable {
 
     public String generateToken(UserEntity user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", user.getRoles());
+        claims.put("roles", user.getRoles());
         return doGenerateToken(claims, user.getEmail(), tokenExpirationTime);
     }
 
     public String generateRefreshToken(UserEntity user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", user.getRoles());
+        claims.put("roles", user.getRoles());
         return doGenerateToken(claims, user.getEmail(), refreshTokenExpirationTime);
     }
 

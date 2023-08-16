@@ -13,7 +13,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Component
@@ -34,15 +33,14 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
 
             if (userEmail != null && jwtUtil.validateToken(authToken)) {
                 Claims claims = jwtUtil.getAllClaimsFromToken(authToken);
-                List<String> rolesMap = claims.get("role", List.class);
-                List<Roles> roles = new ArrayList<>();
+                List<String> rolesMap = claims.get("roles", List.class);
+                List<String> roles = new ArrayList<>();
 
                 for (String rolemap : rolesMap) {
-                    roles.add(Roles.valueOf(rolemap));
+                    roles.add("ROLE_" + Roles.valueOf(rolemap));
                 }
                 return new UsernamePasswordAuthenticationToken(userEmail, authToken,
-                        roles.stream().map(authority ->
-                                new SimpleGrantedAuthority(authority.name())).collect(Collectors.toList())
+                        roles.stream().map(SimpleGrantedAuthority::new).toList()
                 );
             }
 

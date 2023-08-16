@@ -6,9 +6,9 @@ import com.sir.todorestservicewithdynamodb.dtos.todo.request.TodoCreateRequest;
 import com.sir.todorestservicewithdynamodb.dtos.todo.request.TodoUpdateRequest;
 import com.sir.todorestservicewithdynamodb.service.TodoService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -18,23 +18,23 @@ import reactor.core.publisher.Mono;
 @RestController
 @Validated
 @RequestMapping(value = "/api/todos",
-        produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
+        produces = MediaType.APPLICATION_JSON_VALUE)
+@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 public class TodoController {
     private final TodoService todoService;
 
-    @GetMapping("/{email}")
+    @GetMapping("/email/{email}")
     public Flux<TodoDto> getAllTodos(@PathVariable final String email) {
         return todoService.getAllTodos(email);
     }
 
-    @GetMapping("/{email}/by-status")
+    @GetMapping("/{email}/by-status/{status}")
     public Flux<TodoDto> getAllTodosByStatus(@PathVariable final String email,
-                                             @RequestParam @NotEmpty TodoStatus status) {
+                                             @PathVariable final TodoStatus status) {
         return todoService.getAllTodosByStatus(email, status);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public Mono<TodoDto> getTodo(@PathVariable final String id) {
         return todoService.getTodo(id);
     }
