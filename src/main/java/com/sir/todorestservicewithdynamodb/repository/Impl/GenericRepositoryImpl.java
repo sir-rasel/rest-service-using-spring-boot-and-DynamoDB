@@ -26,7 +26,7 @@ public abstract class GenericRepositoryImpl<T> implements GenericRepository<T> {
     protected final String tableName;
     protected final String gsiIndexName;
 
-    public GenericRepositoryImpl(DynamoDbEnhancedAsyncClient dynamoDbEnhancedAsyncClient, Class<T> entityType) {
+    protected GenericRepositoryImpl(DynamoDbEnhancedAsyncClient dynamoDbEnhancedAsyncClient, Class<T> entityType) {
         this.dynamoDbEnhancedAsyncClient = dynamoDbEnhancedAsyncClient;
         this.entityType = entityType;
         this.tableName = getTableName();

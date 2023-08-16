@@ -4,12 +4,11 @@ services:
     image: localstack/localstack:latest
     ports:
       - "4566-4597:4566-4597"
-      - "${PORT_WEB_UI-8010}:${PORT_WEB_UI-8010}"
+      - "8010:8010"
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
       - SERVICES=dynamodb:4566,kinesis:4567
       - DEFAULT_REGION=ap-southeast-1
-      - PORT_WEB_UI=8010
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "./volume:/tmp/localstack"
@@ -40,3 +39,42 @@ services:
     environment:
       - DYNAMO_ENDPOINT=http://localstack:4566
       - AWS_REGION=ap-southeast-1
+
+#version: '3.8'
+#services:
+#  dynamodb-local:
+#    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ."
+#    image: "amazon/dynamodb-local:latest"
+#    container_name: dynamodb-local
+#    ports:
+#      - "8000:8000"
+#    volumes:
+#      - "./docker/dynamodb:/home/dynamodblocal/data"
+#    working_dir: /home/dynamodblocal
+#
+#  aws-cli:
+#    image: amazon/aws-cli:latest
+#    depends_on:
+#      - dynamodb-local
+#    environment:
+#      AWS_DEFAULT_PROFILE: dynamodb-local
+#      AWS_ENDPOINT: --endpoint-url=http://dynamodb-local:8000
+#    entrypoint: /bin/sh -c
+#    volumes:
+#      - './init-scripts:/init-scripts'
+#    command: >
+#      '
+#       for script_name in /init-scripts/*.sh; do
+#         sh $$script_name
+#       done
+#      '
+#
+#  dynamodb-admin:
+#    depends_on:
+#      - dynamodb-local
+#    image: aaronshaf/dynamodb-admin
+#    ports:
+#      - "8001:8001"
+#    environment:
+#      - DYNAMO_ENDPOINT=http://dynamodb-local:8000
+#      - AWS_REGION=ap-southeast-1

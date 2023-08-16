@@ -98,8 +98,7 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         return userRepository.save(user)
-                .map(userEntity -> mapper.map(userEntity, UserDto.class))
-                .doOnError(throwable -> log.error("Error db: ", throwable));
+                .map(userEntity -> mapper.map(userEntity, UserDto.class));
     }
 
     private Mono<UserEntity> updateUserRefreshToken(UserEntity user, String refreshToken) {
